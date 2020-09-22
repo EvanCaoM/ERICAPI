@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ERICAPI</name>
+    </assembly>
+    <members>
+        <member name="T:ERICAPI.Controllers.Item.MainpoController">
+            <summary>
+            Mainpo页面
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.#ctor(ERICAPI.Models.Repositories.ItdsAupoRepository,ERICAPI.Models.Repositories.ItdsYitemRepository)">
+            <summary>
+            实例化Repository
+            </summary>
+            <param name="tdsAupoRepository"></param>
+            <param name="tdsYitemRepository"></param>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.Query(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            查询
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.Save(Newtonsoft.Json.Linq.JArray)">
+            <summary>
+            保存
+            </summary>
+            <param name="forms"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.QueryDeclitem(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            查询底账序号
+            </summary>
+            <param name="form"></param>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetComcode(System.String)">
+            <summary>
+            根据ip从Redis缓存中获取工号
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetVendorcode(System.String)">
+            <summary>
+            获取vendorname
+            </summary>
+            <param name="lifnr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetPrePO(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            原进口PO
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.QueryPR(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            查询pr信息
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ERICAPI.Models.AppDbContext">
+            <summary>
+            DBContext
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Models.AppDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{ERICAPI.Models.AppDbContext})">
+            <summary>
+            一个数据库的构造函数
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="P:ERICAPI.Models.AppDbContext.tdsAupos">
+            <summary>
+            设备po归并表
+            </summary>
+        </member>
+        <member name="P:ERICAPI.Models.AppDbContext.v_sIFREupoMains">
+            <summary>
+            po归并查询视图
+            </summary>
+        </member>
+        <member name="P:ERICAPI.Models.AppDbContext.v_sIFRDeclitem">
+            <summary>
+            底账序号查询视图
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Models.AppDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            注册实体
+            </summary>
+            <param name="modelBuilder"></param>
+        </member>
+        <member name="T:ERICAPI.Models.PAKSDbContext">
+            <summary>
+            DBContext
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Models.PAKSDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            注册实体
+            </summary>
+            <param name="modelBuilder"></param>
+        </member>
+        <member name="T:ERICAPI.Models.Repositories.impl.tdsAupoRepository">
+            <summary>
+            ItdsAupoRepository实现类
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.#ctor(ERICAPI.Models.AppDbContext,ERICAPI.Models.PAKSDbContext)">
+            <summary>
+            初始化
+            </summary>
+            <param name="appDbContext"></param>
+            <param name="paksDbContext"></param>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.AddTdsAupo(ERICAPI.Models.tdsAupo)">
+            <summary>
+            单条添加
+            </summary>
+            <param name="tdsAupo"></param>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.AddTdsAupos(System.Collections.Generic.IEnumerable{ERICAPI.Models.tdsAupo})">
+            <summary>
+            批量添加
+            </summary>
+            <param name="tdsAupos"></param>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.AddTdsAuposTask(System.Collections.Generic.IList{ERICAPI.Models.tdsAupo})">
+            <summary>
+            异步批量添加
+            </summary>
+            <param name="tdsAupos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.RemoveTdsAupo(System.String,System.String,System.String[])">
+            <summary>
+            删除
+            </summary>
+            <param name="bukrs"></param>
+            <param name="ebeln"></param>
+            <param name="ebelp"></param>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetMainpo(ERICAPI.Models.v_sIFREupoMain,System.String,System.String)">
+            <summary>
+            查询
+            </summary>
+            <param name="form"></param>
+            <param name="purchdateFrom"></param>
+            <param name="purchdateTo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetMainpo(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            利用动态表达树动态查询，有点慢
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetTdsAupo(System.String,System.String,System.String)">
+            <summary>
+            单条查询tdsAupo
+            </summary>
+            <param name="bukrs"></param>
+            <param name="ebeln"></param>
+            <param name="ebelp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetTdsAupos(System.String,System.String,System.String[])">
+            <summary>
+            根据ebelp批量查询
+            </summary>
+            <param name="bukrs"></param>
+            <param name="ebeln"></param>
+            <param name="ebelp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetTdsAupos">
+            <summary>
+            批量查询
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetComcode(System.String)">
+            <summary>
+            获取公司别
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetVendorname(System.String)">
+            <summary>
+            查询vendorname，偷懒使用DropdownList实例
+            </summary>
+            <param name="vendorcode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetPrice(System.String,System.String)">
+            <summary>
+            单价判定，不能高于最高价，不能低于最低价
+            感觉和这个页面没关系，先不加
+            </summary>
+            <param name="bukrs"></param>
+            <param name="declitem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.IsExistZl11(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="bukrs"></param>
+            <param name="matnr"></param>
+            <param name="vendorcode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.SameDecMatnr(System.String,System.String,System.String,System.String)">
+            <summary>
+            当有料号的po: 自主报关、代理报关、 在归类有料号的PO时，
+            系统校验公司别+料号是否存在不一致的底账序号，如果有，系统提示；如果没有，系统保存成功
+            </summary>
+            <param name="bukrs"></param>
+            <param name="vendorcode"></param>
+            <param name="matnr"></param>
+            <param name="declitem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.UpdateOtherDatas(ERICAPI.Models.tdsAupo,System.String,System.String)">
+            <summary>
+            更新其他数据
+            </summary>
+            <param name="tdsAupo"></param>
+            <param name="retrc"></param>
+            <param name="itemno"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetPrePO(System.String,System.String,System.String)">
+            <summary>
+            原进口PO
+            </summary>
+            <param name="bukrs"></param>
+            <param name="ebeln"></param>
+            <param name="ebelp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.QueryPR(System.String,System.String)">
+            <summary>
+            查询pr单号
+            </summary>
+            <param name="bukrs"></param>
+            <param name="ebeln"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ERICAPI.Models.Repositories.impl.tdsYitemRepository">
+            <summary>
+            ItdsYitemRepository实现类
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsYitemRepository.GetDeclitems(System.String,System.String,System.String)">
+            <summary>
+            查询
+            </summary>
+            <param name="bukrs"></param>
+            <param name="declitem"></param>
+            <param name="accno"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsYitemRepository.Is3C(System.String,System.String)">
+            <summary>
+            3C判断
+            </summary>
+            <param name="bukrs"></param>
+            <param name="declitem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsYitemRepository.IsEnergy(System.String,System.String)">
+            <summary>
+            能源标识
+            </summary>
+            <param name="bukrs"></param>
+            <param name="declitem"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ERICAPI.Models.Repositories.ItdsYitemRepository">
+            <summary>
+            项号Repository接口
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.ItdsYitemRepository.GetDeclitems(System.String,System.String,System.String)">
+            <summary>
+            查询项号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ERICAPI.Program">
+            <summary>
+            主函数
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Program.Main(System.String[])">
+            <summary>
+            入口
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:ERICAPI.Program.CreateWebHostBuilder(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ERICAPI.Utils.RedisUtil">
+            <summary>
+            调用Redis API工具类
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Utils.RedisUtil.Call(System.String,System.String)">
+            <summary>
+            调用API
+            </summary>
+            <param name="send"></param>
+            <param name="url"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Utils.RedisUtil.GetRedisValue(System.String)">
+            <summary>
+            取值
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Utils.RedisUtil.SetRedisValue(System.String,System.Object,System.Int32)">
+            <summary>
+            存值
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <param name="expireSeconds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Utils.RedisUtil.ExistsKey(System.String)">
+            <summary>
+            是否存在
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

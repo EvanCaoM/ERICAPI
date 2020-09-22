@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ERICAPI</name>
+    </assembly>
+    <members>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.#ctor(ERICAPI.Models.Repositories.ItdsAupoRepository)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="tdsAupoRepository"></param>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.Query(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            查询
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
