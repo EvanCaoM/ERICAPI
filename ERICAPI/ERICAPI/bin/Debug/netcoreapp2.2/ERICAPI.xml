@@ -38,7 +38,7 @@
         </member>
         <member name="M:ERICAPI.Controllers.Item.MainpoController.GetComcode(System.String)">
             <summary>
-            根据ip从Redis缓存中获取工号
+            查询公司别
             </summary>
             <param name="user"></param>
             <returns></returns>
@@ -48,6 +48,13 @@
             获取vendorname
             </summary>
             <param name="lifnr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetUser(System.String)">
+            <summary>
+            根据ip从redis中获取工号
+            </summary>
+            <param name="ip"></param>
             <returns></returns>
         </member>
         <member name="M:ERICAPI.Controllers.Item.MainpoController.GetPrePO(Newtonsoft.Json.Linq.JObject)">
@@ -62,6 +69,12 @@
             查询pr信息
             </summary>
             <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.Delete(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            删除
+            </summary>
             <returns></returns>
         </member>
         <member name="T:ERICAPI.Models.AppDbContext">
@@ -140,11 +153,26 @@
         </member>
         <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.RemoveTdsAupo(System.String,System.String,System.String[])">
             <summary>
-            删除
+            根据ebelp批量删除
             </summary>
             <param name="bukrs"></param>
             <param name="ebeln"></param>
             <param name="ebelp"></param>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.RemoveTdsAupo(System.String,System.String,System.String)">
+            <summary>
+            单条删除
+            </summary>
+            <param name="bukrs"></param>
+            <param name="ebeln"></param>
+            <param name="ebelp"></param>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.RemoveTdsAupo(System.Collections.Generic.IEnumerable{ERICAPI.Models.tdsAupo})">
+            <summary>
+            批量删除
+            </summary>
+            <param name="tdsAupos"></param>
+            <returns></returns>
         </member>
         <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetMainpo(ERICAPI.Models.v_sIFREupoMain,System.String,System.String)">
             <summary>
@@ -251,6 +279,14 @@
             </summary>
             <param name="bukrs"></param>
             <param name="ebeln"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetCtrl(System.String,System.String)">
+            <summary>
+            从tbsctrl中获取配置文件
+            </summary>
+            <param name="sysid"></param>
+            <param name="clrid"></param>
             <returns></returns>
         </member>
         <member name="T:ERICAPI.Models.Repositories.impl.tdsYitemRepository">

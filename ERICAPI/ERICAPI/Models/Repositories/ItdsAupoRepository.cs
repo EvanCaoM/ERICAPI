@@ -21,6 +21,12 @@ namespace ERICAPI.Models.Repositories
 
         Task AddTdsAuposTask(IList<tdsAupo> tdsAupos);
 
+        tdsAupo GetTdsAupo(string bukrs, string ebeln, string ebelp);
+
+        bool RemoveTdsAupo(IEnumerable<tdsAupo> tdsAupos);
+
+        bool RemoveTdsAupo(string bukrs, string ebeln, string ebelp);
+
         IEnumerable<DropdownList> GetComcode(string user);
 
         string GetVendorname(string vendorcode);
@@ -40,5 +46,7 @@ namespace ERICAPI.Models.Repositories
         IEnumerable<View_ResalePOMappingInfo> GetPrePO(string bukrs, string ebeln, string ebelp);
 
         string QueryPR(string bukrs, string ebeln);
+
+        DropdownList GetCtrl(string sysid, string clrid);
     }
 }

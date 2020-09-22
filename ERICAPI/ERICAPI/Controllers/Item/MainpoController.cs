@@ -11,6 +11,7 @@ using System.Threading;
 using ERICAPI.Utils;
 using Newtonsoft.Json;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace ERICAPI.Controllers.Item
 {
@@ -249,7 +250,7 @@ namespace ERICAPI.Controllers.Item
         }
 
         /// <summary>
-        /// 根据ip从Redis缓存中获取工号
+        /// 查询公司别
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -272,6 +273,11 @@ namespace ERICAPI.Controllers.Item
             return _tdsAupoRepository.GetVendorname(lifnr);
         }
 
+        /// <summary>
+        /// 根据ip从redis中获取工号
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
         private string GetUser(string ip)
         {
             return RedisUtil.GetRedisValue(ip);
@@ -313,5 +319,52 @@ namespace ERICAPI.Controllers.Item
             WSSecurity.WSEncrptionForMROResponse response = objSecurity.WSEncrptionForMROAsync(1, "GAMS", strDecrypt).Result;
             return HttpUtility.UrlEncode(response.Body.WSEncrptionForMROResult);   //URL編碼避免辨識不正確
         }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ServerResponse<bool> Delete(JObject form)
+        {
+            string userName = GetUser(form["ip"].ToString());
+            string message = string.Empty;
+            IList<tdsAupo> tdsAupos = new List<tdsAupo>();
+            var ctrl = _tdsAupoRepository.GetCtrl("QSBN_DelAupo", "01");
+            if (!ctrl.drpValue.Contains(userName) && !ctrl.drpText.Contains(userName))
+            {
+                return ServerResponse<bool>.CreateByErrorMessage("没有删除权限！");
+            }
+            JArray datas = JArray.FromObject(form["data"]);
+            foreach (var data in datas)
+            {
+                if (_tdsAupoRepository.ECCheck(data["BUKRS"].ToString(), data["EBELN"].ToString(), data["EBELP"].ToString()))
+                {
+                    message = "已做过EC单，不允许删除！";
+                }
+                if ((("9110,9210,9001").Contains(data["BUKRS"].ToString())) && ctrl.drpText.Contains(userName) ||
+                    ("9100,9200,9600,9900,9000".Contains(data["BUKRS"].ToString())) && ctrl.drpValue.Contains(userName))
+                {
+                    tdsAupos.Add(_tdsAupoRepository.GetTdsAupo(data["BUKRS"].ToString(), data["EBELN"].ToString(), data["EBELP"].ToString()));
+                }
+                else
+                {
+                    message = "没有删除权限！";
+                }
+
+            }
+            if (string.IsNullOrEmpty(message))
+            {
+                if(_tdsAupoRepository.RemoveTdsAupo(tdsAupos))
+                    return ServerResponse<bool>.CreateBySuccessMessage("删除成功！" );
+                else
+                    return ServerResponse<bool>.CreateByErrorMessage("删除失败！请联系MIS");
+            }
+            else
+            {
+                return ServerResponse<bool>.CreateByErrorMessage("删除失败！" + message);
+            }
+        }
+
     }
 }

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "Z:\\code_c#\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj": {}
+    "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj": {}
   },
   "projects": {
-    "Z:\\code_c#\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj": {
+    "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "Z:\\code_c#\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj",
+        "projectUniqueName": "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj",
         "projectName": "ERICAPI",
-        "projectPath": "Z:\\code_c#\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj",
-        "packagesPath": "C:\\Users\\evancao\\.nuget\\packages\\",
-        "outputPath": "Z:\\code_c#\\ERICAPI\\ERICAPI\\ERICAPI\\obj\\",
+        "projectPath": "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj",
+        "packagesPath": "C:\\Users\\A7100040\\.nuget\\packages\\",
+        "outputPath": "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\ERICAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\evancao\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\A7100040\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -25,8 +25,8 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "G:\\NugetPackages": {},
-          "https://nuget.cdn.azure.cn/v3/index.json": {}
+          "D:\\NugetSource": {},
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
@@ -114,7 +114,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
         }
       }
     }

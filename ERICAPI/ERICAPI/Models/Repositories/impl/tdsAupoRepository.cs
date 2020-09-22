@@ -81,7 +81,7 @@ namespace ERICAPI.Models.Repositories.impl
         }
 
         /// <summary>
-        /// 删除
+        /// 根据ebelp批量删除
         /// </summary>
         /// <param name="bukrs"></param>
         /// <param name="ebeln"></param>
@@ -98,6 +98,47 @@ namespace ERICAPI.Models.Repositories.impl
             catch (SqlException e)
             {
                 throw e;
+            }
+        }
+
+        /// <summary>
+        /// 单条删除
+        /// </summary>
+        /// <param name="bukrs"></param>
+        /// <param name="ebeln"></param>
+        /// <param name="ebelp"></param>
+        public bool RemoveTdsAupo(string bukrs, string ebeln, string ebelp)
+        {
+            tdsAupo tdsAupo = new tdsAupo();
+            try
+            {
+                tdsAupo = GetTdsAupo(bukrs, ebeln, ebelp);
+                _context.tdsAupos.Remove(tdsAupo);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (SqlException e)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="tdsAupos"></param>
+        /// <returns></returns>
+        public bool RemoveTdsAupo(IEnumerable<tdsAupo> tdsAupos)
+        {
+            try
+            {
+                _context.tdsAupos.RemoveRange(tdsAupos);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (SqlException e)
+            {
+                return false;
             }
         }
 
@@ -387,5 +428,22 @@ namespace ERICAPI.Models.Repositories.impl
                     new SqlParameter("ebeln", ebeln)
                 }).FirstOrDefault().drpValue;
         }
+
+        /// <summary>
+        /// 从tbsctrl中获取配置文件
+        /// </summary>
+        /// <param name="sysid"></param>
+        /// <param name="clrid"></param>
+        /// <returns></returns>
+        public DropdownList GetCtrl(string sysid, string clrid)
+        {
+            return _context.dropdownLists.FromSqlRaw($"SELECT VCHR1 as drpValue,VCHR2 as drpText  FROM tbsCtrl where SYSID=@sysid AND CTLID=@clrid ",
+                new[]
+                {
+                    new SqlParameter("sysid", sysid),
+                    new SqlParameter("clrid", clrid)
+                }).FirstOrDefault();
+        }
+
     }
 }

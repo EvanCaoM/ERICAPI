@@ -2106,6 +2106,7 @@
       "path": "microsoft.netcore.targets/2.0.0",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "lib/netstandard1.0/_._",
@@ -4923,6 +4924,7 @@
       "path": "system.runtime.serialization.json/4.0.2",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -4981,6 +4983,7 @@
       "path": "system.runtime.serialization.primitives/4.1.1",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -5834,23 +5837,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\evancao\\.nuget\\packages\\": {},
+    "C:\\Users\\A7100040\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "Z:\\code_c#\\ERICAPI\\ERICAPI\\UnitTestProject1\\UnitTestProject1.csproj",
+      "projectUniqueName": "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\UnitTestProject1\\UnitTestProject1.csproj",
       "projectName": "UnitTestProject1",
-      "projectPath": "Z:\\code_c#\\ERICAPI\\ERICAPI\\UnitTestProject1\\UnitTestProject1.csproj",
-      "packagesPath": "C:\\Users\\evancao\\.nuget\\packages\\",
-      "outputPath": "Z:\\code_c#\\ERICAPI\\ERICAPI\\UnitTestProject1\\obj\\",
+      "projectPath": "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\UnitTestProject1\\UnitTestProject1.csproj",
+      "packagesPath": "C:\\Users\\A7100040\\.nuget\\packages\\",
+      "outputPath": "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\UnitTestProject1\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\evancao\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\A7100040\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5858,14 +5861,14 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "G:\\NugetPackages": {},
-        "https://nuget.cdn.azure.cn/v3/index.json": {}
+        "D:\\NugetSource": {},
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.2": {
           "projectReferences": {
-            "Z:\\code_c#\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj": {
-              "projectPath": "Z:\\code_c#\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj"
+            "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj": {
+              "projectPath": "D:\\code\\ericapi\\ERICAPI\\ERICAPI\\ERICAPI\\ERICAPI.csproj"
             }
           }
         }
@@ -5908,7 +5911,7 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
       }
     }
   },
