@@ -12,6 +12,8 @@ using ERICAPI.Utils;
 using Newtonsoft.Json;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ERICAPI.Controllers.Item
 {
@@ -67,19 +69,23 @@ namespace ERICAPI.Controllers.Item
             string purchdateTo = form["purchdateTo"].ToString().Trim();
             
             var results = JArray.FromObject(_tdsAupoRepository.GetMainpo(queryForm, purchdateFrom, purchdateTo));
-            var tcurr = string.Empty;
-            if (results.First["BUKRS"].ToString().Equals("9000"))
-                results[0]["vendorname"] = _tdsAupoRepository.GetVendorname(results.First["LIFNR"].ToString());
-            if (!results.First["WAERS"].ToString().Equals("RMB"))
-                tcurr = _tdsAupoRepository.GetTcurr(results.First["BUKRS"].ToString(), results.First["WAERS"].ToString());
-
-            foreach (var result in results)
+            if (results == null)
+                return null;
+            else
             {
-                result["MARK"] = string.IsNullOrEmpty(result["MARK"].ToString()) ? "0" : result["MARK"];
-                result["TCURR"] = tcurr;
+                var tcurr = string.Empty;
+                if (results.First["BUKRS"].ToString().Equals("9000"))
+                    results[0]["vendorname"] = _tdsAupoRepository.GetVendorname(results.First["LIFNR"].ToString());
+                if (!results.First["WAERS"].ToString().Equals("RMB"))
+                    tcurr = _tdsAupoRepository.GetTcurr(results.First["BUKRS"].ToString(), results.First["WAERS"].ToString());
+
+                foreach (var result in results)
+                {
+                    result["MARK"] = string.IsNullOrEmpty(result["MARK"].ToString()) ? "0" : result["MARK"];
+                    result["TCURR"] = tcurr;
+                }
+                return results;
             }
-            return results;
-            
         }
 
         /// <summary>
@@ -91,15 +97,16 @@ namespace ERICAPI.Controllers.Item
         public ServerResponse<string> Save(JArray forms)
         {
             IList<tdsAupo> tdsAupos = new List<tdsAupo>();
-            //todo...
-            string user = GetUser("ip");
+            string user = GetUser();
+
+
             if (string.IsNullOrEmpty(user))
                 return ServerResponse<string>.CreateByErrorMessage("请求超时，请刷新主页重进！");
             foreach (var form in forms)
             {
+
                 if (form["REMARK"].ToString().Equals("申请人确认抽单") && string.IsNullOrEmpty(form["DECLITEM"].ToString()))
                 {
-
                 }
                 else
                 {
@@ -190,8 +197,8 @@ namespace ERICAPI.Controllers.Item
                 tdsAupo.MANDT = form["MANDT"].ToString();
                 tdsAupo.BUKRS = form["BUKRS"].ToString();
 
-                //tdsAupo.EBELN = form["EBELN"].ToString();
-                tdsAupo.EBELN = "111111111";
+                tdsAupo.EBELN = form["EBELN"].ToString();
+                //tdsAupo.EBELN = "111111111";
                 tdsAupo.EBELP = form["EBELP"].ToString();
                 tdsAupo.DECLITEM = form["DECLITEM"].ToString();
                 tdsAupo.MATNR = form["MATNR"].ToString();
@@ -204,8 +211,13 @@ namespace ERICAPI.Controllers.Item
                 tdsAupo.APFLAG = form["APFLAG"].ToString();
                 tdsAupo.STATUS = form["STATUS"].ToString();
                 tdsAupo.MARK = form["MARK"].ToString();
+                tdsAupo.REMARK = form["REMARK"].ToString();
                 tdsAupo.CHDATE = DateTime.Now;
-                tdsAupo.CHNAME = "Test";
+                tdsAupo.CHNAME = user;
+                tdsAupo.ZHENGSHUI = form["BRGEW"].ToString();
+                tdsAupo.HOMEORABROAD = string.Empty;
+                tdsAupo.CELFLAG = form["CELFLAG"].ToString();
+                tdsAupo.ACCNO = form["BOITYP"].ToString();
                 tdsAupos.Add(tdsAupo);
                 // 管制
                 string retrc = form["RETRC"].ToString();
@@ -216,7 +228,10 @@ namespace ERICAPI.Controllers.Item
             try
             {
                 if (_tdsAupoRepository.AddTdsAupos(tdsAupos))
+                {
+                    SendMailApbno(forms);
                     return ServerResponse<string>.CreateBySuccessMessage("Save Successfully!");
+                }
                 else
                     return ServerResponse<string>.CreateByErrorMessage("Save Error!");
             }
@@ -224,7 +239,6 @@ namespace ERICAPI.Controllers.Item
             {
                 return ServerResponse<string>.CreateByErrorMessage("Save Error!" + e.Message);
             }
-            // TODO...发邮件
 
 
 
@@ -252,13 +266,11 @@ namespace ERICAPI.Controllers.Item
         /// <summary>
         /// 查询公司别
         /// </summary>
-        /// <param name="user"></param>
         /// <returns></returns>
         [HttpPost, HttpGet]
-        public JArray GetComcode(string user)
+        public JArray GetComcode()
         {
-
-            string userName = RedisUtil.GetRedisValue(user) ?? "QSBN";
+            string userName = GetUser() ?? "QSBN";
             return JArray.FromObject(_tdsAupoRepository.GetComcode(userName));
         }
 
@@ -276,11 +288,11 @@ namespace ERICAPI.Controllers.Item
         /// <summary>
         /// 根据ip从redis中获取工号
         /// </summary>
-        /// <param name="ip"></param>
         /// <returns></returns>
-        private string GetUser(string ip)
+        private string GetUser()
         {
-            return RedisUtil.GetRedisValue(ip);
+            var ip = HttpContext.Connection.RemoteIpAddress;//ip地址
+            return RedisUtil.GetRedisValue("ip:" + ip.ToString());
         }
 
         /// <summary>
@@ -327,7 +339,9 @@ namespace ERICAPI.Controllers.Item
         [HttpPost]
         public ServerResponse<bool> Delete(JObject form)
         {
-            string userName = GetUser(form["ip"].ToString());
+            string userName = GetUser();
+            if(string.IsNullOrEmpty(userName))
+                return ServerResponse<bool>.CreateByErrorMessage("请求超时，请刷新主页重进！！");
             string message = string.Empty;
             IList<tdsAupo> tdsAupos = new List<tdsAupo>();
             var ctrl = _tdsAupoRepository.GetCtrl("QSBN_DelAupo", "01");
@@ -364,6 +378,113 @@ namespace ERICAPI.Controllers.Item
             {
                 return ServerResponse<bool>.CreateByErrorMessage("删除失败！" + message);
             }
+        }
+
+        private void CheckVendorcode(IEnumerable<tdsAupo> tdsAupos, string lifnr)
+        {
+            if (!tdsAupos.First().REMARK.Equals("申请人确认抽单"))
+            {
+                if (lifnr.Substring(lifnr.Length - 1, 1) == "L") 
+                {
+                    //tdsAupos.Select(x => new[] { new bukrs = x.BUKRS, fsf = x.APPQTY }).Distinct();
+                }
+                if (lifnr.Substring(lifnr.Length - 3, 3) == "MRO" && lifnr != "QCI_MRO")
+                {
+                }
+            }
+        }
+
+        [HttpGet]
+        public void Test()
+        {
+            var a = _tdsAupoRepository.GetCtrl("QSBN_DelAupo", "01");
+        }
+
+        /// <summary>
+        /// 判断此PO的厂商是否在数据库tdsYven中存在，如果不存在说明是新厂商，经确认好像是没用了
+        /// </summary>
+        /// <param name="bukrs"></param>
+        /// <param name="ebeln"></param>
+        /// <param name="lifnr"></param>
+        /// <returns></returns>
+        private string GetNewVenName(string bukrs, string ebeln, string lifnr)
+        {
+            var strNewVenderName = string.Empty;
+            var agent = _tdsAupoRepository.GetPoAgent(bukrs, ebeln);
+            if (!string.IsNullOrEmpty(agent))
+            {
+                if (!_tdsAupoRepository.IsVenExistInDB(bukrs, agent))
+                    strNewVenderName = agent;
+            }
+            if (_tdsAupoRepository.IsVenExistInDB(bukrs, lifnr))
+                strNewVenderName = lifnr;
+            return strNewVenderName;
+        }
+
+        /// <summary>
+        /// PO涉3证提醒报表
+        /// </summary>
+        /// <param name="forms"></param>
+        private void SendMailApbno(JArray forms)
+        {
+            if (forms.Count > 0)
+            {
+                if ("9110,9210,9001".Contains(forms.First["BUKRS"].ToString()))
+                {
+                    HashSet<string> hsDeclitem = new HashSet<string>();
+                    foreach (var dr in forms)
+                    {
+                        hsDeclitem.Add(dr["DECLITEM"].ToString());
+                    }
+                    string declitem = string.Join("','", hsDeclitem);
+
+                    #region 拼接Apbno栏位
+                    IEnumerable<EntityClass3> Apbnos = _tdsAupoRepository.GetAbpno(forms.First["BUKRS"].ToString(), declitem);
+                    JArray dtApbno = JArray.FromObject(Apbnos);
+
+                    var query =
+                                from form in forms
+                                join drApbno in dtApbno
+                                on form["DECLITEM"].ToString() equals drApbno["value2"].ToString()
+                                where form["LIFNR"].ToString().Equals("TNC_MRO") && drApbno["value3"].ToString().Equals("3")
+                                select new { 
+                                    LIFNR = form["LIFNR"], 
+                                    EBELN = form["EBELN"],
+                                    EBELP = form["EBELP"],
+                                    DECLITEM = form["DECLITEM"],
+                                    TAX_CODE = form["TAX_CODE"],
+                                    SMAKTX = form["SMAKTX"],
+                                    APBNO = drApbno["value3"]
+                                };
+                    //select form.Concat(drApbno.Skip(2));
+                    #endregion
+
+                    if (query.Count() > 0)
+                    {
+                        JArray body = new JArray();
+                        foreach (var result in query)
+                        {
+                            JObject jObject = new JObject();
+                            jObject["Vendor code"] = result.LIFNR;
+                            jObject["Po No"] = result.EBELN;
+                            jObject["Po Item"] = result.EBELP;
+                            jObject["DECLITEM"] = result.DECLITEM;
+                            jObject["TAX_CODE"] = result.TAX_CODE;
+                            jObject["SMAKTX"] = result.SMAKTX;
+                            jObject["RULE"] = result.APBNO;
+                            body.Add(jObject);
+                        }
+                        var mail = _tdsAupoRepository.GetCtrl("QSBN_MainPOApbno", "01");
+                        string mailTo = mail.drpValue.ToString();
+                        string mailCc = GetUser() + "," + mail.drpText.ToString();
+                        string mailBody = JSONUtil.JArray2HtmlTable(JArray.FromObject(query));
+                        //Mail.SendMail(mailBody, mailTo, mailCc, "A7100040", "PO涉两用物项和技术出口许可证（3证）提醒");
+                        Mail.SendMail(mailBody, "A7100040", "A7100040", "A7100040", "PO涉两用物项和技术出口许可证（3证）提醒");
+
+                    }
+                }
+            }
+
         }
 
     }

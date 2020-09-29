@@ -36,11 +36,10 @@
             </summary>
             <param name="form"></param>
         </member>
-        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetComcode(System.String)">
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetComcode">
             <summary>
             查询公司别
             </summary>
-            <param name="user"></param>
             <returns></returns>
         </member>
         <member name="M:ERICAPI.Controllers.Item.MainpoController.GetVendorcode(System.String)">
@@ -50,11 +49,10 @@
             <param name="lifnr"></param>
             <returns></returns>
         </member>
-        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetUser(System.String)">
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetUser">
             <summary>
             根据ip从redis中获取工号
             </summary>
-            <param name="ip"></param>
             <returns></returns>
         </member>
         <member name="M:ERICAPI.Controllers.Item.MainpoController.GetPrePO(Newtonsoft.Json.Linq.JObject)">
@@ -75,6 +73,39 @@
             <summary>
             删除
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.GetNewVenName(System.String,System.String,System.String)">
+            <summary>
+            判断此PO的厂商是否在数据库tdsYven中存在，如果不存在说明是新厂商，经确认好像是没用了
+            </summary>
+            <param name="bukrs"></param>
+            <param name="ebeln"></param>
+            <param name="lifnr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.MainpoController.SendMailApbno(Newtonsoft.Json.Linq.JArray)">
+            <summary>
+            PO涉3证提醒报表
+            </summary>
+            <param name="forms"></param>
+        </member>
+        <member name="T:ERICAPI.Controllers.Item.ZL11Controller">
+            <summary>
+            料号归并
+            </summary>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.#ctor(ERICAPI.Models.Repositories.IZL11Repository)">
+            <summary>
+            构造方法
+            </summary>
+            <param name="zl11Repository"></param>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.Query(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            查询
+            </summary>
+            <param name="form"></param>
             <returns></returns>
         </member>
         <member name="T:ERICAPI.Models.AppDbContext">
@@ -103,11 +134,31 @@
             底账序号查询视图
             </summary>
         </member>
+        <member name="P:ERICAPI.Models.AppDbContext.VIEW_spare_All">
+            <summary>
+            料号归并视图
+            </summary>
+        </member>
+        <member name="P:ERICAPI.Models.AppDbContext.dropdownLists">
+            <summary>
+            下拉框实体，偷懒也做两个参数的实体
+            </summary>
+        </member>
+        <member name="P:ERICAPI.Models.AppDbContext.entityClass3s">
+            <summary>
+            三个参数的实体
+            </summary>
+        </member>
         <member name="M:ERICAPI.Models.AppDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary>
             注册实体
             </summary>
             <param name="modelBuilder"></param>
+        </member>
+        <member name="T:ERICAPI.Models.EntityClass3">
+            <summary>
+            三个属性的公用类
+            </summary>
         </member>
         <member name="T:ERICAPI.Models.PAKSDbContext">
             <summary>
@@ -289,6 +340,30 @@
             <param name="clrid"></param>
             <returns></returns>
         </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetPoAgent(System.String,System.String)">
+            <summary>
+            根据PO得到其代理厂商信息，如果该PO没有代理，则返回空Table。
+            </summary>
+            <param name="bukrs">厂区</param>
+            <param name="ebeln">PO</param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.IsVenExistInDB(System.String,System.String)">
+            <summary>
+            查看数据库中tdsYven中是否已经存在厂商的记录，判断厂商是否是新厂商
+            </summary>
+            <param name="bukrs">厂区</param>
+            <param name="lifnr">厂商</param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsAupoRepository.GetAbpno(System.String,System.String)">
+            <summary>
+            查询apbno
+            </summary>
+            <param name="bukrs"></param>
+            <param name="declitem"></param>
+            <returns></returns>
+        </member>
         <member name="T:ERICAPI.Models.Repositories.impl.tdsYitemRepository">
             <summary>
             ItdsYitemRepository实现类
@@ -319,6 +394,12 @@
             <param name="declitem"></param>
             <returns></returns>
         </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.Query(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            利用动态表达树动态查询，有点慢
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:ERICAPI.Models.Repositories.ItdsYitemRepository">
             <summary>
             项号Repository接口
@@ -346,6 +427,21 @@
             
             </summary>
             <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Utils.JSONUtil.JArray2HtmlTable(Newtonsoft.Json.Linq.JArray)">
+            <summary>
+            JArray转换成html
+            </summary>
+            <param name="jArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Utils.JSONUtil.JArray2HtmlTable(Newtonsoft.Json.Linq.JArray,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            传入列名生成html表格
+            </summary>
+            <param name="jArray"></param>
+            <param name="columnName"></param>
             <returns></returns>
         </member>
         <member name="T:ERICAPI.Utils.RedisUtil">

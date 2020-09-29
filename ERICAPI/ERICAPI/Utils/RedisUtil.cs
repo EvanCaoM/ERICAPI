@@ -55,7 +55,6 @@ namespace ERICAPI.Utils
             catch (Exception e)
             {
                 return null;
-                throw e;
             }
         }
 
@@ -82,7 +81,6 @@ namespace ERICAPI.Utils
             catch (Exception e)
             {
                 return false;
-                throw e;
             }
 
         }
@@ -110,7 +108,6 @@ namespace ERICAPI.Utils
             catch (Exception e)
             {
                 return false;
-                throw e;
             }
 
         }

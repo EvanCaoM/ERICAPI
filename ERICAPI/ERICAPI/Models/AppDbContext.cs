@@ -36,7 +36,21 @@ namespace ERICAPI.Models
         /// </summary>
         public DbSet<v_sIFRDeclitem> v_sIFRDeclitem { get; set; }
 
+        /// <summary>
+        /// 料号归并视图
+        /// </summary>
+        public DbSet<VIEW_spare_All> VIEW_spare_All { get; set; }
+
+
+        /// <summary>
+        /// 下拉框实体，偷懒也做两个参数的实体
+        /// </summary>
         public DbSet<DropdownList> dropdownLists { get; set; }
+
+        /// <summary>
+        /// 三个参数的实体
+        /// </summary>
+        public DbSet<EntityClass3> entityClass3s { get; set; }
 
         /// <summary>
         /// 注册实体
@@ -52,6 +66,8 @@ namespace ERICAPI.Models
                 .HasKey(k => new { k.BUKRS, k.ACCNO, k.DECLITEM });
             modelBuilder.Entity<DropdownList>()
                 .HasKey(k => k.drpValue);
+            modelBuilder.Entity<EntityClass3>().HasNoKey();
+            modelBuilder.Entity<VIEW_spare_All>().HasKey(k => new { k.BUKRS, k.MATNR, k.Vendorcode, k.Type});
         }
     }
 }

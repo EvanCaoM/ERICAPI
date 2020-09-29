@@ -6,6 +6,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>G:\WebSite\ERICAPI-depen</_PublishTargetUrl>
+    <_PublishTargetUrl>\\ecvm33\WebSite\ERICAPI\ERICAPI-depen\</_PublishTargetUrl>
   </PropertyGroup>
 </Project>

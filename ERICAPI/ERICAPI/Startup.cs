@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace ERICAPI
 {
@@ -43,6 +44,7 @@ namespace ERICAPI
             services.AddRazorPages();
             services.AddTransient<ItdsAupoRepository, tdsAupoRepository>();
             services.AddTransient<ItdsYitemRepository, tdsYitemRepository>();
+            services.AddTransient<IZL11Repository, ZL11Repository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -71,6 +73,7 @@ namespace ERICAPI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });
             // 配置Swagger
             app.UseSwagger();
             app.UseSwaggerUI(c =>

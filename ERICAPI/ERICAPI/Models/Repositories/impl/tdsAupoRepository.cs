@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -267,18 +268,21 @@ namespace ERICAPI.Models.Repositories.impl
         /// <returns></returns>
         public string GetVendorname(string vendorcode)
         {
-            return _context.dropdownLists.FromSqlRaw($"SELECT TOP 1 name1 as drpValue,'' as drpText FROM tdsLFA1  WHERE MANDT  in( '218','228','299') AND  LIFNR = @lifnr"
-                ,new[] {new SqlParameter("lifnr", vendorcode)}).FirstOrDefault().drpValue;
+            var sql = "SELECT TOP 1 name1 as drpValue,'' as drpText FROM tdsLFA1  WHERE MANDT  in( '218','228','299') AND  LIFNR = @lifnr";
+            var result = _context.dropdownLists.FromSqlRaw(sql
+                , new[] {new SqlParameter("lifnr", vendorcode)}).FirstOrDefault();
+            return result == null ? string.Empty : result.drpValue;
         }
 
         public string GetTcurr(string bukrs, string fcurr)
         {
-            return _context.dropdownLists.FromSqlRaw($"select top 1 CAST(ukurs AS VARCHAR(10)) as drpValue,'' as drpText from tbstcurr where bukrs = @bukrs and fcurr = @fcurr order by gdatu desc",
+            var result = _context.dropdownLists.FromSqlRaw($"select top 1 CAST(ukurs AS VARCHAR(10)) as drpValue,'' as drpText from tbstcurr where bukrs = @bukrs and fcurr = @fcurr order by gdatu desc",
                 new[]
                 {
                     new SqlParameter("bukrs", bukrs),
                     new SqlParameter("fcurr", fcurr)
-                }).FirstOrDefault().drpValue;
+                }).FirstOrDefault();
+            return result == null ? string.Empty : result.drpValue;
         }
 
         /// <summary>
@@ -385,7 +389,7 @@ namespace ERICAPI.Models.Repositories.impl
         public int UpdateOtherDatas(tdsAupo tdsAupo, string retrc, string itemno)
         {
             string sql1 = $"delete tdspoitem  where BUKRS = @bukrs and ebeln = @ebeln and ebelp = @ebelp and  mandt = @mandt;";
-            string sql2 = $"insert into tdspoitem ([Mandt],bukrs,[Ebeln],[Ebelp],[Retrc],[Remark] ) values ( @mandt ,@bukrs,@ebeln',@ebelp,@retrc,'');";
+            string sql2 = $"insert into tdspoitem ([Mandt],bukrs,[Ebeln],[Ebelp],[Retrc],[Remark] ) values ( @mandt ,@bukrs,@ebeln,@ebelp,@retrc,'');";
             string sql3 = $"update tdsPOBasicInfoAupo set ITMENO =@itemno where mandt = @mandt and bukrs = @bukrs and ebeln = @ebeln and ebelp = @ebelp ;";
             string sql4 = $"update tdsuploadMsg set LOCK = 'Y' where bukrs = @bukrs and ebeln = @ebeln and ebelp = @ebelp ;";
             return _context.Database.ExecuteSqlRaw(sql1 + sql2 + sql3 + sql4,
@@ -420,13 +424,14 @@ namespace ERICAPI.Models.Repositories.impl
         /// <returns></returns>
         public string QueryPR(string bukrs, string ebeln)
         {
-            
-            return _context.dropdownLists.FromSqlRaw($"SELECT distinct wpoid as drpValue,'' as drpText  FROM tdsPoBasicInfo  where Bukrs=@bukrs and EBELN= @ebeln ",
+            var result = 
+            _context.dropdownLists.FromSqlRaw($"SELECT distinct wpoid as drpValue,'' as drpText  FROM tdsPoBasicInfo  where Bukrs=@bukrs and EBELN= @ebeln ",
                 new[]
                 {
                     new SqlParameter("bukrs", bukrs),
                     new SqlParameter("ebeln", ebeln)
-                }).FirstOrDefault().drpValue;
+                }).FirstOrDefault();
+            return result == null ? string.Empty : result.drpValue;
         }
 
         /// <summary>
@@ -437,7 +442,8 @@ namespace ERICAPI.Models.Repositories.impl
         /// <returns></returns>
         public DropdownList GetCtrl(string sysid, string clrid)
         {
-            return _context.dropdownLists.FromSqlRaw($"SELECT VCHR1 as drpValue,VCHR2 as drpText  FROM tbsCtrl where SYSID=@sysid AND CTLID=@clrid ",
+            var sql = "SELECT VCHR1 as drpValue,VCHR2 as drpText  FROM tbsCtrl where SYSID=@sysid AND CTLID=@clrid ";
+            return _context.dropdownLists.FromSqlRaw(sql,
                 new[]
                 {
                     new SqlParameter("sysid", sysid),
@@ -445,5 +451,63 @@ namespace ERICAPI.Models.Repositories.impl
                 }).FirstOrDefault();
         }
 
+
+        /// <summary>
+        /// 根据PO得到其代理厂商信息，如果该PO没有代理，则返回空Table。
+        /// </summary>
+        /// <param name="bukrs">厂区</param>
+        /// <param name="ebeln">PO</param>
+        /// <returns></returns>
+        public string GetPoAgent(string bukrs, string ebeln)
+        {
+            StringBuilder sbSql = new StringBuilder();
+            sbSql.Append(" select H.AGENT as drpValue,A.NAME1 as drpText from v_sIFRPoHead as H inner join tdsLFA1 as A  ");
+            sbSql.Append(" on H.MANDT = A.MANDT and H.AGENT = A.LIFNR ");
+            sbSql.Append(" where H.MANDT in ( '218','228','299') and H.BUKRS = @bukrs and H.EBELN = @ebeln and (H.AGENT <> '' or H.AGENT is NULL)");
+
+            var result = _context.dropdownLists.FromSqlRaw(sbSql.ToString(),
+                new[]
+                {
+                    new SqlParameter("bukrs", bukrs),
+                    new SqlParameter("ebeln", ebeln)
+                }).FirstOrDefault();
+            return result == null ? string.Empty : result.drpValue;
+        }
+
+        /// <summary>
+        /// 查看数据库中tdsYven中是否已经存在厂商的记录，判断厂商是否是新厂商
+        /// </summary>
+        /// <param name="bukrs">厂区</param>
+        /// <param name="lifnr">厂商</param>
+        /// <returns></returns>
+        public bool IsVenExistInDB(string bukrs, string lifnr)
+        {
+            string strSql = "select top 1 'Y' as drpValue, '' as drpText from tdsyven where Mandt in ('218','228','299') and BUKRS = @bukrs AND LIFNR =@lifnr ";
+
+            return _context.dropdownLists.FromSqlRaw(strSql,
+                new[]
+                {
+                    new SqlParameter("bukrs", bukrs),
+                    new SqlParameter("lifnr", lifnr)
+                }).Any();
+        }
+
+        /// <summary>
+        /// 查询apbno
+        /// </summary>
+        /// <param name="bukrs"></param>
+        /// <param name="declitem"></param>
+        /// <returns></returns>
+        public IEnumerable<EntityClass3> GetAbpno(string bukrs, string declitem)
+        {
+            var sql = "select BUKRS as value1,DECLITEM as value2,APBNO as value3 from tdsYitem where BUKRS=@bukrs and DECLITEM in ('" + declitem + "')";
+            return _context.entityClass3s.FromSqlRaw(sql,
+                new[]
+                {
+                    new SqlParameter("bukrs", bukrs),
+                    //new SqlParameter("declitem", declitem)
+                });
+
+        }
     }
 }

@@ -48,5 +48,11 @@ namespace ERICAPI.Models.Repositories
         string QueryPR(string bukrs, string ebeln);
 
         DropdownList GetCtrl(string sysid, string clrid);
+
+        string GetPoAgent(string bukrs, string ebeln);
+
+        bool IsVenExistInDB(string bukrs, string lifnr);
+
+        IEnumerable<EntityClass3> GetAbpno(string bukrs, string declitem);
     }
 }

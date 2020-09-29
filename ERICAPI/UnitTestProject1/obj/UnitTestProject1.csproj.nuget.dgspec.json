@@ -81,19 +81,19 @@
             },
             "System.ServiceModel.Duplex": {
               "target": "Package",
-              "version": "[4.4.*, )"
+              "version": "[4.5.0, )"
             },
             "System.ServiceModel.Http": {
               "target": "Package",
-              "version": "[4.4.*, )"
+              "version": "[4.5.0, )"
             },
             "System.ServiceModel.NetTcp": {
               "target": "Package",
-              "version": "[4.4.*, )"
+              "version": "[4.5.0, )"
             },
             "System.ServiceModel.Security": {
               "target": "Package",
-              "version": "[4.4.*, )"
+              "version": "[4.5.0, )"
             }
           },
           "imports": [

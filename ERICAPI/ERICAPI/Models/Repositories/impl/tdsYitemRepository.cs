@@ -26,7 +26,11 @@ namespace ERICAPI.Models.Repositories.impl
         /// <returns></returns>
         public IEnumerable<v_sIFRDeclitem> GetDeclitems(string bukrs, string declitem, string accno = null)
         {
-            var result = _context.v_sIFRDeclitem.Where(x => x.BUKRS.Equals(bukrs) && x.DECLITEM.Equals(declitem));
+            var result = _context.v_sIFRDeclitem.Where(x => x.BUKRS.Equals(bukrs) && x.DFLAG != "X");
+            if (IsNum(declitem))
+                result = result.Where(x => x.DECLITEM.Equals(declitem)).Union(result.Where(x => x.TAX_CODE.Contains(declitem)));
+            else
+                result = result.Where(x => x.SMAKTX.Contains(declitem));
             if (!string.IsNullOrEmpty(accno))
                 result = result.Where(x => x.ACCNO.Equals(accno));
             return result.ToList();
@@ -85,6 +89,18 @@ namespace ERICAPI.Models.Repositories.impl
                 }
             }
             return strflag;
+        }
+
+        public bool IsNum(String str)
+        {
+            for (int i = 0; i < str.Length; i++)
+            {
+                if ((str[i] < '0' || str[i] > '9') && str[i] != '.')
+                    return false;
+            }
+            if (str.Length == 0)
+                return false;
+            return true;
         }
     }
 }
