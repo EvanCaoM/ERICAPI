@@ -40,6 +40,9 @@ namespace ERICAPI.Models
         public string ID { get; set; }
         public string LOCK { get; set; }
         public string Type { get; set; }
+        public string Uid { get; set; }
+        public string MEINS { get; set; }
+        public string SEQNO { get; set; }
 
     }
 }

@@ -16,6 +16,8 @@ namespace ERICAPI.Models.Repositories
         /// <returns></returns>
         IEnumerable<v_sIFRDeclitem> GetDeclitems(string bukrs, string declitem, string accno = null);
 
+        IEnumerable<v_sIFRDeclitem> GetDeclitemsDraw(string bukrs, string declitem, string accno = null);
+
         bool Is3C(string bukrs, string declitem);
 
         bool IsEnergy(string bukrs, string declitem);

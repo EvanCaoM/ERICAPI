@@ -260,7 +260,10 @@ namespace ERICAPI.Controllers.Item
         [HttpPost]
         public JArray QueryDeclitem(JObject form)
         {
-            return JArray.FromObject(_tdsYitemRepository.GetDeclitems(form["BUKRS"].ToString(), form["DECLITEM"].ToString()));
+            if(form["TYPE"].ToString().Equals("放弃退税"))
+                return JArray.FromObject(_tdsYitemRepository.GetDeclitemsDraw(form["BUKRS"].ToString(), form["DECLITEM"].ToString()));
+            else
+                return JArray.FromObject(_tdsYitemRepository.GetDeclitems(form["BUKRS"].ToString(), form["DECLITEM"].ToString()));
         }
 
         /// <summary>

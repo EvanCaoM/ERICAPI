@@ -67,7 +67,7 @@ namespace ERICAPI.Models
             modelBuilder.Entity<DropdownList>()
                 .HasKey(k => k.drpValue);
             modelBuilder.Entity<EntityClass3>().HasNoKey();
-            modelBuilder.Entity<VIEW_spare_All>().HasKey(k => new { k.BUKRS, k.MATNR, k.Vendorcode, k.Type});
+            modelBuilder.Entity<VIEW_spare_All>().HasNoKey();
         }
     }
 }

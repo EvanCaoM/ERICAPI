@@ -95,17 +95,59 @@
             料号归并
             </summary>
         </member>
-        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.#ctor(ERICAPI.Models.Repositories.IZL11Repository)">
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.#ctor(ERICAPI.Models.Repositories.IZL11Repository,ERICAPI.Models.Repositories.ItdsYitemRepository)">
             <summary>
             构造方法
             </summary>
             <param name="zl11Repository"></param>
+            <param name="tdsYitemRepository"></param>
         </member>
         <member name="M:ERICAPI.Controllers.Item.ZL11Controller.Query(Newtonsoft.Json.Linq.JObject)">
             <summary>
             查询
             </summary>
             <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.Save(Newtonsoft.Json.Linq.JArray)">
+            <summary>
+            保存
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.LockAuthority(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            加解锁权限
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.Delete(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            删除
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.LockClick(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            加解锁
+            </summary>
+            <param name="form"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.GetUser">
+            <summary>
+            根据ip从redis中获取工号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Controllers.Item.ZL11Controller.InsertMro(ERICAPI.Models.VIEW_spare_All)">
+            <summary>
+            插入归并数据
+            </summary>
+            <param name="zl11"></param>
             <returns></returns>
         </member>
         <member name="T:ERICAPI.Models.AppDbContext">
@@ -371,7 +413,16 @@
         </member>
         <member name="M:ERICAPI.Models.Repositories.impl.tdsYitemRepository.GetDeclitems(System.String,System.String,System.String)">
             <summary>
-            查询
+            查询非放弃退税底账序号
+            </summary>
+            <param name="bukrs"></param>
+            <param name="declitem"></param>
+            <param name="accno"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.tdsYitemRepository.GetDeclitemsDraw(System.String,System.String,System.String)">
+            <summary>
+            放弃退税底账序号
             </summary>
             <param name="bukrs"></param>
             <param name="declitem"></param>
@@ -394,10 +445,76 @@
             <param name="declitem"></param>
             <returns></returns>
         </member>
-        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.Query(System.Collections.Generic.Dictionary{System.String,System.String})">
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.Query(Newtonsoft.Json.Linq.JObject)">
             <summary>
             利用动态表达树动态查询，有点慢
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.InsertMro(ERICAPI.Models.VIEW_spare_All)">
+            <summary>
+            插入旧料号数据
+            </summary>
+            <param name="zl11"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.InsertCmro(ERICAPI.Models.VIEW_spare_All)">
+            <summary>
+            插入旧料号项号
+            </summary>
+            <param name="zl11"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.InsertMroNew(ERICAPI.Models.VIEW_spare_All)">
+            <summary>
+            插入新料号项号
+            </summary>
+            <param name="zl11"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.CheckDiff(System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            料号检查
+            </summary>
+            <param name="bukrs"></param>
+            <param name="matnr"></param>
+            <param name="smaktx"></param>
+            <param name="tax_code"></param>
+            <param name="cgewei"></param>
+            <param name="declitem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.GetCtrl(System.String,System.String)">
+            <summary>
+            从tbsctrl中获取配置文件
+            </summary>
+            <param name="sysid"></param>
+            <param name="clrid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.LockClick(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            加解锁
+            </summary>
+            <param name="bukrs"></param>
+            <param name="matnr"></param>
+            <param name="vendorcode"></param>
+            <param name="type"></param>
+            <param name="lockId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERICAPI.Models.Repositories.impl.ZL11Repository.Delete(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            删除
+            </summary>
+            <param name="type"></param>
+            <param name="mandt"></param>
+            <param name="bukrs"></param>
+            <param name="matnr"></param>
+            <param name="vendorcode"></param>
+            <param name="declitem"></param>
+            <param name="delName"></param>
+            <param name="delReason"></param>
             <returns></returns>
         </member>
         <member name="T:ERICAPI.Models.Repositories.ItdsYitemRepository">

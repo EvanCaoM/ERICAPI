@@ -1,10 +1,12 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ERICAPI.Models.Repositories.impl
@@ -22,45 +24,24 @@ namespace ERICAPI.Models.Repositories.impl
         /// 利用动态表达树动态查询，有点慢
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<VIEW_spare_All> Query(Dictionary<string, string> form)
+        public IEnumerable<VIEW_spare_All> Query(JObject form)
         {
-            var data = from a in _context.VIEW_spare_All
-                       select a;
+            var result = _context.VIEW_spare_All.Select(x => x);
+            result = (form["BUKRS"].ToString().Equals("Company") || string.IsNullOrEmpty(form["BUKRS"].ToString())) ? result : result.Where(x => x.BUKRS.Equals(form["BUKRS"].ToString()));
+            result = string.IsNullOrEmpty(form["MATNR"].ToString()) ? result : result.Where(x => x.MATNR.Equals(form["MATNR"].ToString()));
+            result = string.IsNullOrEmpty(form["DECLITEM"].ToString()) ? result : result.Where(x => x.DECLITEM.Equals(form["DECLITEM"].ToString()));
+            result = string.IsNullOrEmpty(form["Vendorcode"].ToString()) ? result : result.Where(x => x.Vendorcode.Equals(form["Vendorcode"].ToString()));
+            result = string.IsNullOrEmpty(form["TAX_CODE"].ToString()) ? result : result.Where(x => x.TAX_CODE.Equals(form["TAX_CODE"].ToString()));
+            result = string.IsNullOrEmpty(form["IsToTww"].ToString()) ? result : result.Where(x => x.IsToTww.Equals(form["IsToTww"].ToString()));
+            result = string.IsNullOrEmpty(form["DFLAG"].ToString()) ? result : (form["DFLAG"].ToString().Equals("Y") ? result.Where(x => x.DFLAG == "") : result.Where(x => x.DFLAG.Equals("X")));
+            result = string.IsNullOrEmpty(form["IsRegiestered"].ToString()) ? result : (form["IsRegistered"].ToString().Equals("Y") ? result.Where(x => x.DECLITEM != "") : result.Where(x => x.DECLITEM == "" || x.DECLITEM == null));
+            result = string.IsNullOrEmpty(form["SMAKTX"].ToString()) ? result : result.Where(x => x.SMAKTX.Contains(form["SMAKTX"].ToString()));
+            result = string.IsNullOrEmpty(form["MatType"].ToString()) ? result : result.Where(x => x.MatType.Equals(form["MatType"].ToString()));
+            result = string.IsNullOrEmpty(form["Type"].ToString()) ? result : result.Where(x => x.Type.Equals(form["Type"].ToString()));
+            result = string.IsNullOrEmpty(form["DateFrom"].ToString()) ? result : result.Where(x => String.Compare(x.CRDATE, form["DateFrom"].ToString()) >= 0);
+            result = string.IsNullOrEmpty(form["DateTo"].ToString()) ? result : result.Where(x => String.Compare(x.CRDATE, form["DateTo"].ToString()) <= 0);
+            return result.OrderByDescending(x => x.CRDATE);
 
-            //使用表达式树动态生成查询条件
-            ParameterExpression c = Expression.Parameter(typeof(VIEW_spare_All), "c");
-            Expression condition = Expression.Constant(true);
-            foreach (var formPair in form)
-            {
-                if (!string.IsNullOrEmpty(formPair.Value))
-                {
-
-                    if (!formPair.Key.Contains("Date"))
-                    {
-                        Expression con = Expression.Call(
-                                Expression.Property(c, typeof(VIEW_spare_All).GetProperty(formPair.Key)),
-                                typeof(string).GetMethod("Equals", new Type[] { typeof(string) }),
-                                Expression.Constant(formPair.Value));
-                        condition = Expression.And(con, condition);
-                        Expression<Func<VIEW_spare_All, bool>> end =
-                            Expression.Lambda<Func<VIEW_spare_All, bool>>(condition, new ParameterExpression[] { c });
-                        data = data.Where(end);
-                    }
-                    else
-                    {
-                        //日期单独处理
-                        switch (formPair.Key.Replace("From", "").Replace("To", ""))
-                        {
-                            case "purchdate":
-                                data = formPair.Key.EndsWith("From") ?
-                                    data.Where(x => String.Compare(x.CHDATE, formPair.Value) >= 0) :
-                                    data.Where(x => String.Compare(x.CHDATE, formPair.Value) <= 0);
-                                break;
-                        }
-                    }
-                }
-            }
-            return data;
         }
 
         /// <summary>
@@ -246,5 +227,103 @@ namespace ERICAPI.Models.Repositories.impl
 
         }
 
+
+        /// <summary>
+        /// 从tbsctrl中获取配置文件
+        /// </summary>
+        /// <param name="sysid"></param>
+        /// <param name="clrid"></param>
+        /// <returns></returns>
+        public DropdownList GetCtrl(string sysid, string clrid)
+        {
+            var sql = "SELECT VCHR1 as drpValue,VCHR2 as drpText  FROM tbsCtrl where SYSID=@sysid AND CTLID=@clrid ";
+            return _context.dropdownLists.FromSqlRaw(sql,
+                new[]
+                {
+                    new SqlParameter("sysid", sysid),
+                    new SqlParameter("clrid", clrid)
+                }).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 加解锁
+        /// </summary>
+        /// <param name="bukrs"></param>
+        /// <param name="matnr"></param>
+        /// <param name="vendorcode"></param>
+        /// <param name="type"></param>
+        /// <param name="lockId"></param>
+        /// <returns></returns>
+        public bool LockClick(string bukrs, string matnr, string vendorcode, string type, string lockId)
+        {
+            var sqlNew = "UPDATE tdsMatnr_New SET LOCK=@lockId where  bukrs=@bukrs and mro_matnr=@matnr and vendorcode=@vendorcode and lock<>@lockId";
+            var sql = "UPDATE tdsMatnr_New SET LOCK=@lockId where  bukrs=@bukrs and mro_matnr=@matnr and vendorcode=@vendorcode and lock<>@lockId";
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@bukrs", bukrs),
+                new SqlParameter("@matnr", matnr),
+                new SqlParameter("@vendorcode", vendorcode),
+                new SqlParameter("@lockId", lockId)
+            };
+            try
+            {
+                if(!string.IsNullOrEmpty(type))
+                    _context.VIEW_spare_All.FromSqlRaw(sqlNew, parameters);
+                else
+                    _context.VIEW_spare_All.FromSqlRaw(sql, parameters);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="mandt"></param>
+        /// <param name="bukrs"></param>
+        /// <param name="matnr"></param>
+        /// <param name="vendorcode"></param>
+        /// <param name="declitem"></param>
+        /// <param name="delName"></param>
+        /// <param name="delReason"></param>
+        /// <returns></returns>
+        public int Delete(string type, string mandt, string bukrs, string matnr, string vendorcode, string declitem, string delName, string delReason)
+        {
+            var sql1 = "Delete tdsymro where MANDT =@mandt AND BUKRS=@bukrs and  MRO_MATNR=@matnr and dflag='X';";
+            var sql2 = " Update tdsYmro SET DFLAG='X',DELREASON=@delReason,DELNAME=@delName,DELDATE=GETDATE()  where MANDT =@mandt AND BUKRS=@bukrs and  MRO_MATNR=@matnr AND DECLITEM=@declitem ;";
+            var sql3 = "UPDATE TDSYBMRO SET LOCK='N' WHERE BUKRS=@bukrs AND MATNR=@matnr  and vendorcode=@vendorcode ;";
+            var sql4 = "Insert into tdsYmro (MANDT,BUKRS,MRO_MATNR,DECLITEM,CRNAME,CRDATE) VALUES (@mandt,@bukrs,@matnr,'', (SELECT top 1 CRNAME FROM tdsYmro WHERE MANDT=@mandt AND bukrs=@bukrs and mro_matnr=@matnr and dflag='X'), (SELECT top 1 CRDATE FROM tdsYmro WHERE MANDT=@mandt AND bukrs=@bukrs and mro_matnr=@matnr and dflag='X'))";
+
+            var sqlNew1 = "Update tdsYmro_New SET DFLAG='X',DELREASON=@delReason,DELNAME=@delName,DELDATE=GETDATE() where MANDT =@mandt AND BUKRS=@bukrs and  MRO_MATNR=@matnr AND DECLITEM=@declitem and vendorcode=@vendorcode ;";
+            var sqlNew2 = "UPDATE tdsMatnr_New SET LOCK='N' WHERE BUKRS=@bukrs AND MRO_MATNR=@matnr  and vendorcode=@vendorcode ;";
+            var sqlNew3 = "Insert into tdsYmro_New (MANDT,BUKRS,MRO_MATNR,DECLITEM,vendorcode,CRNAME,CRDATE,MAKTX ) VALUES (@mandt,@bukrs,@matnr,'',@vendorcode,(SELECT top 1 CRNAME FROM tdsYmro_New WHERE MANDT=@mandt AND bukrs=@bukrs and mro_matnr=@matnr and dflag='X' and vendorcode=@vendorcode),(SELECT top 1 CRDATE FROM tdsYmro_New WHERE MANDT=@mandt AND bukrs=@bukrs and mro_matnr=@matnr and dflag='X' and vendorcode=@vendorcode),(SELECT top 1 MAKTX FROM tdsYmro_New WHERE MANDT=@mandt AND bukrs=@bukrs and mro_matnr=@matnr and dflag='X' and vendorcode=@vendorcode));";
+
+            string sql;
+
+            if (string.IsNullOrEmpty(type))
+                sql = sql1 + sql2 + sql3 + sql4;
+            else
+                sql = sqlNew1 + sqlNew2 + sqlNew3;
+
+            return _context.Database.ExecuteSqlRaw(sql,
+                new[]
+                {
+                    new SqlParameter("@mandt", mandt),
+                    new SqlParameter("@bukrs", bukrs),
+                    new SqlParameter("@matnr", matnr),
+                    new SqlParameter("@vendorcode", vendorcode),
+                    new SqlParameter("@declitem", declitem),
+                    new SqlParameter("@delName", delName),
+                    new SqlParameter("@delReason", delReason)
+                });
+
+        }
+    
+   
     }
 }

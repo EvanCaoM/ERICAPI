@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +20,7 @@ namespace ERICAPI.Models.Repositories.impl
         }
 
         /// <summary>
-        /// 查询
+        /// 查询非放弃退税底账序号
         /// </summary>
         /// <param name="bukrs"></param>
         /// <param name="declitem"></param>
@@ -34,6 +36,28 @@ namespace ERICAPI.Models.Repositories.impl
             if (!string.IsNullOrEmpty(accno))
                 result = result.Where(x => x.ACCNO.Equals(accno));
             return result.ToList();
+        }
+
+        /// <summary>
+        /// 放弃退税底账序号
+        /// </summary>
+        /// <param name="bukrs"></param>
+        /// <param name="declitem"></param>
+        /// <param name="accno"></param>
+        /// <returns></returns>
+        public IEnumerable<v_sIFRDeclitem> GetDeclitemsDraw(string bukrs, string declitem, string accno = null)
+        {
+            string sql = string.Empty;
+            if(IsNum(declitem))
+                sql = "select DECLITEM,MATNR,TAX_CODE,SMAKTX,ZGEWEI,CGEWEI,DFLAG,BUKRS,CLASS,RETRC,BRGEW,SEQNO,'' AS ACCNO,'' AS CELFLG,'' AS APBNO from tdsYitem_DrawBack where bukrs = @bukrs and DECLITEM = @declitem and (DFLAG <> 'X' or DFLAG IS NULL)";
+            else
+                sql = "select DECLITEM,MATNR,TAX_CODE,SMAKTX,ZGEWEI,CGEWEI,DFLAG,BUKRS,CLASS,RETRC,BRGEW,SEQNO,'' AS ACCNO,'' AS CELFLG,'' AS APBNO from tdsYitem_DrawBack where bukrs = @bukrs and SMAKTX like N'%" + declitem + "%' and (DFLAG <> 'X' or DFLAG IS NULL)";
+            return _context.v_sIFRDeclitem.FromSqlRaw(sql, 
+                new[] 
+                { 
+                    new SqlParameter("@bukrs", bukrs),
+                    new SqlParameter("@declitem", declitem)
+                });
         }
 
         /// <summary>
